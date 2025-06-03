@@ -1,0 +1,20 @@
+{% extends "basefichas.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Resultado de la importación</h2>
+
+<p><strong>Registros exitosos:</strong> {{ exitos }}</p>
+
+{% if errores %}
+  <h3>Errores encontrados:</h3>
+  <ul>
+    {% for e in errores %}
+      <li>{{ e }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No hubo errores.</p>
+{% endif %}
+{% endblock %}
+

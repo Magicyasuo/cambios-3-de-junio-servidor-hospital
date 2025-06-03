@@ -1,0 +1,27 @@
+# Ignora entornos virtuales
+env/
+venv/
+
+# Ignora archivos compilados
+__pycache__/
+*.pyc
+
+# Ignora archivos de configuración y variables de entorno
+.env
+db.sqlite3
+
+# Ignora archivos de configuración específicos
+settings.py
+
+# Ignora migraciones
+*/migrations/
+
+# Ignora archivos estáticos generados
+static/
+media/
+staticfiles/
+
+
+# Otros: carpetas de desarrollo
+.vscode/
+.idea/

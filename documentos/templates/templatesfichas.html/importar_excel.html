@@ -1,0 +1,27 @@
+{% extends "basefichas.html" %}
+
+{% load static %}
+
+{% block content %}
+<h2>Importar registros desde Excel y asociar a un FUID</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="fuid_id">Selecciona FUID:</label>
+        <select name="fuid_id" class="form-select" required>
+            {% for fuid in fuids %}
+                <option value="{{ fuid.id }}">FUID #{{ fuid.id }} - {{ fuid.entidad_productora.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="excel">Archivo Excel:</label>
+        <input type="file" name="excel" class="form-control" accept=".xlsx,.xls" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Importar y asociar</button>   
+</form>
+{% endblock %}

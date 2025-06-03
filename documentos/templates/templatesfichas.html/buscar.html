@@ -1,0 +1,30 @@
+{% extends "basefichas.html" %}
+{% load static %}
+
+{% block content %}
+<h1 class="mb-3">Buscar Ficha</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="mb-3">
+        <label for="{{ form.num_identificacion.id_for_label }}" class="form-label">Número de Identificación</label>
+        {{ form.num_identificacion }}
+        {% for error in form.num_identificacion.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.Numero_historia_clinica.id_for_label }}" class="form-label">Número de Historia Clínica</label>
+        {{ form.Numero_historia_clinica }}
+        {% for error in form.Numero_historia_clinica.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+    <a href="{% url 'preparar_fichas1' %}" class="btn btn-secondary">Cambiar Ubicación</a>
+</form>
+{% endblock %}

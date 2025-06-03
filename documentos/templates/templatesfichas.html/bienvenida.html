@@ -1,0 +1,46 @@
+{% extends "basefichas.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Bienvenido a la Gestión de Fichas</h1>
+    <p class="lead">Seleccione una opción para comenzar:</p>
+
+    <div class="row gy-4">
+        <div class="col-md-4">
+            <a href="{% url 'preparar_fichas1' %}" class="btn btn-primary w-100 py-3">
+                📁 Preparar Ubicación Física
+            </a>
+        </div>
+        <!-- <div class="col-md-4">
+            <a href="{% url 'buscar_ficha1' %}" class="btn btn-secondary w-100 py-3">
+                🔍 Buscar Ficha
+            </a>
+        </div> -->
+        <div class="col-md-4">
+            <a href="{% url 'crear_ficha1' %}" class="btn btn-success w-100 py-3">
+                ➕ Crear Nueva Ficha
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'lista_fichas1' %}" class="btn btn-info w-100 py-3">
+                📋 Ver Lista de Fichas
+            </a>
+        </div>
+        <!-- <div class="col-md-4">
+            <a href="{% url 'lista_fichas1' %}" class="btn btn-warning w-100 py-3">
+                📊 Reportes y Estadísticas
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'logout' %}" class="btn btn-danger w-100 py-3">
+                🔒 Cerrar Sesión
+            </a>
+        </div> -->
+    </div>
+
+    <hr class="my-5">
+
+    <!-- <p class="text-muted">Sistema de Gestión de Fichas | El Callejón del Gato</p> -->
+</div>
+{% endblock %}

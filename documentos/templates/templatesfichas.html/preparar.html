@@ -1,0 +1,41 @@
+{% extends "basefichas.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Seleccionar Ubicación Física</h1>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+    <div class="mb-3">
+        <label for="{{ form.gabeta.id_for_label }}" class="form-label">Gabeta</label>
+        {{ form.gabeta }}
+        {% for error in form.gabeta.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+
+        <div class="mb-3">
+            <label for="{{ form.caja.id_for_label }}" class="form-label">Caja</label>
+            {{ form.caja }}
+            {% for error in form.caja.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.carpeta.id_for_label }}" class="form-label">Carpeta</label>
+            {{ form.carpeta }}
+            {% for error in form.carpeta.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Continuar</button>
+        <a href="{% url 'bienvenida_fichas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

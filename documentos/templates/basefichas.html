@@ -1,0 +1,365 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Central de Archivos del Sarare{% endblock %}</title>
+    <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- Íconos de Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <!-- colReorder CSS para DataTables (permite reordenar columnas con drag-and-drop) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.5.5/css/colReorder.bootstrap5.min.css">
+    
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <style>
+
+    
+    /* ----------------------------------------------------------------------------------
+       PALETA DE COLORES Y ESTILOS GLOBALES
+       ---------------------------------------------------------------------------------- */
+
+    /* Fuente global */
+
+    #tablaFUID_filter {
+    display: none !important;
+}
+
+th[data-order="asc"]::after {
+  content: " ▲";
+  color: #003366;
+  font-size: 0.75rem;
+}
+th[data-order="desc"]::after {
+  content: " ▼";
+  color: #003366;
+  font-size: 0.75rem;
+}
+
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f6f8, #e9edf1); /* Fondo limpio y profesional */
+      color: #333; /* Texto en gris oscuro para legibilidad */
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* Ajuste del HTML y body para ocupar toda la pantalla en altura */
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column; /* Apilar de arriba a abajo */
+    }
+
+    /* El main crecerá para ocupar el espacio restante disponible */
+    main {
+      flex: 1;
+    }
+
+    /* Barra de navegación */
+    .navbar {
+      background-color: #f8f9fa; /* Un tono claro */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+    }
+    .navbar-brand, .navbar-nav .nav-link, .navbar-text a {
+      color: #003366 !important; /* Azul oscuro */
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #0056b3 !important; /* Azul más vibrante en hover */
+    }
+
+    /* HERO o cabecera grande con título y contexto */
+    .hero {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      margin: 2rem 0; /* Espaciado vertical */
+    }
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #003366;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    /* Encabezados de sección con estilo */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #003366;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Tarjeta para agrupar filtros o contenido */
+    .filter-card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Estilo de las etiquetas de filtro */
+    .filter-label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: inline-block;
+      font-size: 0.9rem;
+      color: #003366;
+    }
+
+    /* Ajustes en inputs para filtros */
+    .filter-input, .form-select {
+      font-size: 0.85rem;
+    }
+
+    /* Contenedor de la tabla */
+    .table-container {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
+    }
+
+    /* Estilos de la tabla con DataTables */
+    .table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: auto;
+    }
+    .table th, .table td {
+      font-size: 0.85rem;
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;     /* Evita que el texto se desborde en múltiples líneas */
+      overflow: hidden;        /* Oculta texto que no cabe */
+      text-overflow: ellipsis; /* Añade "..." si el texto es demasiado largo */
+    }
+    .table thead th {
+      background-color: #f8f9fa; /* Tono claro para distinguir el encabezado */
+      color: #003366;
+      font-weight: 600;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #f8f9fa;
+    }
+    .table-striped tbody tr:hover {
+      background-color: #e9ecef;
+    }
+
+    /* Ajustes para DataTables */
+    .dataTables_wrapper .dataTables_filter {
+      float: left !important;
+      text-align: left;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+      float: left !important;
+    }
+    .dataTables_info {
+      font-size: 0.85rem;
+    }
+
+    /* Botones generales */
+    .btn-primary {
+      background-color: #0069d9 !important;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: #005bb5 !important;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .btn-secondary {
+      background-color: #6c757d !important;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268 !important;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Otros botones de ejemplo (Info, Warning) */
+    .btn-warning {
+      background-color: #ffc107 !important;
+      color: #212529;
+      border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800 !important;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .btn-info {
+      background-color: #17a2b8 !important;
+      border: none;
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-info:hover {
+      background-color: #138496 !important;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pie de página */
+    footer {
+      margin-top: 3rem;
+      padding: 1rem;
+      background: #003366;
+      color: #ffffff;
+      text-align: center;
+      border-radius: 10px 10px 0 0;
+    }
+    footer p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Media Queries para mayor responsividad */
+    @media (max-width: 992px) {
+      /* Ajustes para pantallas medianas a pequeñas */
+      .filter-card .row > [class*="col-"] {
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      /* Ajustes para pantallas muy pequeñas */
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+      .table thead {
+        display: none; /* Ocultamos el encabezado en pantallas muy pequeñas */
+      }
+      .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+      }
+      .table td {
+        border: none;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+        padding-left: 50%;
+        white-space: normal; /* Permite el salto de línea */
+        text-overflow: initial;
+      }
+      .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: 600;
+        color: #003366;
+        white-space: nowrap;
+      }
+      .table th, .table td {
+    font-size: 0.85rem;
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    }
+  </style>
+
+</head>
+<body>
+    <!-- Navbar -->
+<nav class="navbar mb-4 animate__animated animate__fadeInDown animate__delay-1s" style="background-color: #f8f9fa;">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-archive-fill text-primary me-2" style="font-size:1.5rem;"></i>
+                Hospital del Sarare
+            </a>
+            <span class="navbar-text">
+                {% if request.user.is_authenticated %}
+                    Bienvenido, {{ request.user.username }} | <a href="{% url 'logout' %}">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Iniciar sesión</a>
+                {% endif %}
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+<!-- Main Content -->
+<main class="container my-4">
+    {% block content %}{% endblock %}
+</main>
+
+<main class="container-fluid my-4" id="full-width-container">
+    {% block full_width_content %}{% endblock %}
+</main>
+
+
+    <!-- Footer -->
+<footer>
+    <p>&copy; {% now "Y" %} Hospital del Sarare - Central de Archivos del Sarare.</p>
+    <p class="small">Hecho con 💙 en Saravena.</p>
+</footer>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: 'main, footer',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800,
+                easing: 'easeOutExpo'
+            });
+        });
+    </script>
+
+<!-- jQuery (requerido por DataTables) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- colReorder JS para DataTables -->
+<script src="https://cdn.datatables.net/colreorder/1.5.5/js/dataTables.colReorder.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#miTabla').DataTable({
+            colReorder: true
+        });
+    });
+</script>
+
+</body>
+</html>
