@@ -1,176 +1,174 @@
 {% extends "basefichas.html" %}
 {% block content %}
-<!-- <h1 class="mb-3">Ficha #{{ ficha.consecutivo }}</h1> -->
 
-<div class="container my-5" style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';">
-    <!-- Ficha Principal -->
-<div class="card shadow-lg rounded-3 p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <h2 class="card-title text-dark" style="font-size: 2rem; font-weight: 900;">
-            <i class="bi bi-file-person-fill me-2 text-primary"></i> Ficha #{{ ficha.consecutivo }}
-        </h2>
-        <a href="{% url 'crear_ficha1' %}" class="btn btn-success">
-            Crear una nueva ficha
-        </a>
+<div class="container my-4">
+  <!-- Ficha Principal -->
+  <div class="card shadow-lg rounded-3 p-2 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+      <h2 class="card-title text-dark fs-3 fw-bold">
+        <i class="bi bi-file-person-fill me-2 text-primary"></i> Ficha #{{ ficha.consecutivo }}
+      </h2>
+      <a href="{% url 'crear_ficha1' %}" class="btn btn-success btn-sm">
+        Crear una nueva ficha
+      </a>
     </div>
 
-
-
-        <!-- Sección: Información Personal -->
-        <div class="mb-5">
-            <h4 class="text-primary border-bottom pb-2 mb-4" style="font-weight: 900; font-size: 1.5rem;">Información Personal</h4>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Primer Nombre:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.primer_nombre }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Segundo Nombre:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.segundo_nombre|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Primer Apellido:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.primer_apellido }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Segundo Apellido:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.segundo_apellido|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Fecha de Nacimiento:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.fecha_nacimiento|date:"d/m/Y" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Sexo:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.sexo|default:"—" }}</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Sección: Información Personal -->
+    <div class="mb-4">
+      <h4 class="text-primary border-bottom pb-2 mb-3 fw-bold fs-5">Información Personal</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Primer Nombre:</strong>
+            <p class="small mb-0">{{ ficha.primer_nombre }}</p>
+          </div>
         </div>
-
-        <!-- Sección: Identificación -->
-        <div class="mb-5">
-            <h4 class="text-secondary border-bottom pb-2 mb-4" style="font-weight: 900; font-size: 1.5rem;">Identificación</h4>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Número de Identificación:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.num_identificacion|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Tipo de Identificación:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.tipo_identificacion|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Identificación Secundaria:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.num_identificacion_secundario|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Tipo de Identificación Secundaria:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.tipo_identificacion_secundario|default:"—" }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Segundo Nombre:</strong>
+            <p class="small mb-0">{{ ficha.segundo_nombre|default:"—" }}</p>
+          </div>
         </div>
-
-        <!-- Sección: Información del Padre -->
-        <div class="mb-5">
-            <h4 class="text-success border-bottom pb-2 mb-4" style="font-weight: 900; font-size: 1.5rem;">Información del Padre</h4>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Primer Nombre:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.primer_nombre_padre|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Segundo Nombre:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.segundo_nombre_padre|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Primer Apellido:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.primer_apellido_padre|default:"—" }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-4 border bg-white rounded-3">
-                        <strong style="font-size: 1.2rem; font-weight: 800;">Segundo Apellido:</strong>
-                        <p style="font-size: 1.1rem;">{{ ficha.segundo_apellido_padre|default:"—" }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Primer Apellido:</strong>
+            <p class="small mb-0">{{ ficha.primer_apellido }}</p>
+          </div>
         </div>
-<!-- Sección: Ubicación Física -->
-<div class="mb-5">
-    <h4 class="text-info border-bottom pb-2 mb-4" style="font-weight: 900; font-size: 1.5rem;">Ubicación Física</h4>
-    <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Segundo Apellido:</strong>
+            <p class="small mb-0">{{ ficha.segundo_apellido|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Fecha de Nacimiento:</strong>
+            <p class="small mb-0">{{ ficha.fecha_nacimiento|date:"d/m/Y" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Sexo:</strong>
+            <p class="small mb-0">{{ ficha.sexo|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección: Identificación -->
+    <div class="mb-4">
+      <h4 class="text-primary border-bottom pb-2 mb-3 fw-bold fs-5">Identificación</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Número de Identificación:</strong>
+            <p class="small mb-0">{{ ficha.num_identificacion|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Tipo de Identificación:</strong>
+            <p class="small mb-0">{{ ficha.tipo_identificacion|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Identificación Secundaria:</strong>
+            <p class="small mb-0">{{ ficha.num_identificacion_secundario|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Tipo de Identificación Secundaria:</strong>
+            <p class="small mb-0">{{ ficha.tipo_identificacion_secundario|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección: Información del Padre -->
+    <div class="mb-4">
+      <h4 class="text-success border-bottom pb-2 mb-3 fw-bold fs-5">Información del Padre</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Primer Nombre:</strong>
+            <p class="small mb-0">{{ ficha.primer_nombre_padre|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Segundo Nombre:</strong>
+            <p class="small mb-0">{{ ficha.segundo_nombre_padre|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Primer Apellido:</strong>
+            <p class="small mb-0">{{ ficha.primer_apellido_padre|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Segundo Apellido:</strong>
+            <p class="small mb-0">{{ ficha.segundo_apellido_padre|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección: Ubicación Física -->
+    <div class="mb-4">
+      <h4 class="text-info border-bottom pb-2 mb-3 fw-bold fs-5">Ubicación Física</h4>
+      <div class="row g-3">
         <div class="col-md-4">
-            <div class="p-4 border bg-white rounded-3">
-                <strong style="font-size: 1.2rem; font-weight: 800;">Gaveta:</strong>
-                <p style="font-size: 1.1rem;">{{ ficha.gabeta|default:"—" }}</p>
-            </div>
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Gaveta:</strong>
+            <p class="small mb-0">{{ ficha.gabeta|default:"—" }}</p>
+          </div>
         </div>
         <div class="col-md-4">
-            <div class="p-4 border bg-white rounded-3">
-                <strong style="font-size: 1.2rem; font-weight: 800;">Caja:</strong>
-                <p style="font-size: 1.1rem;">{{ ficha.caja|default:"—" }}</p>
-            </div>
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Caja:</strong>
+            <p class="small mb-0">{{ ficha.caja|default:"—" }}</p>
+          </div>
         </div>
         <div class="col-md-4">
-            <div class="p-4 border bg-white rounded-3">
-                <strong style="font-size: 1.2rem; font-weight: 800;">Carpeta:</strong>
-                <p style="font-size: 1.1rem;">{{ ficha.carpeta|default:"—" }}</p>
-            </div>
+          <div class="p-2 border bg-white rounded-3">
+            <strong class="fs-6 fw-bold">Carpeta:</strong>
+            <p class="small mb-0">{{ ficha.carpeta|default:"—" }}</p>
+          </div>
         </div>
+      </div>
     </div>
 
-    
-</div>
-<div class="row g-3">
-    <div class="col-md-6">
-        <div class="p-4 border bg-white rounded-3">
-            <strong style="font-size: 1.2rem; font-weight: 800;">Último Registro de Visita:</strong>
-            <p style="font-size: 1.1rem;">{{ ficha.ultimo_registro_de_visita_en_la_base_de_datos|default:"—" }}</p>
+    <!-- Sección: Fechas de Visita -->
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="p-2 border bg-white rounded-3">
+          <strong class="fs-6 fw-bold">Último Registro de Visita:</strong>
+          <p class="small mb-0">{{ ficha.ultimo_registro_de_visita_en_la_base_de_datos|default:"—" }}</p>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="p-4 border bg-white rounded-3">
-            <strong style="font-size: 1.2rem; font-weight: 800;">Registro de Visita según FUID:</strong>
-            <p style="font-size: 1.1rem;">{{ ficha.Fecha_de_visita_de_la_tarjeta|default:"—" }}</p>
+      </div>
+      <div class="col-md-6">
+        <div class="p-2 border bg-white rounded-3">
+          <strong class="fs-6 fw-bold">Registro de Visita según FUID:</strong>
+          <p class="small mb-0">{{ ficha.Fecha_de_visita_de_la_tarjeta|default:"—" }}</p>
         </div>
+      </div>
     </div>
-</div>
 
-
-
-
-
-        <!-- Botones de Acción -->
-        <div class="d-flex justify-content-end gap-3 mt-4">
-            <a href="{% url 'editar_ficha1' ficha.consecutivo %}" class="btn btn-warning rounded-pill shadow-sm px-4"><i class="bi bi-pencil-square"></i> Editar</a>
-            <a href="{% url 'lista_fichas1' %}" class="btn btn-secondary rounded-pill shadow-sm px-4"><i class="bi bi-arrow-left-circle"></i> Volver a lista</a>
-        </div>
+    <!-- Botones de Acción -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <a href="{% url 'editar_ficha1' ficha.consecutivo %}" class="btn btn-warning btn-sm rounded-pill shadow-sm px-3">
+        <i class="bi bi-pencil-square"></i> Editar
+      </a>
+      <a href="{% url 'lista_fichas1' %}" class="btn btn-secondary btn-sm rounded-pill shadow-sm px-3">
+        <i class="bi bi-arrow-left-circle"></i> Volver a lista
+      </a>
     </div>
+  </div>
 </div>
 
 {% endblock %}

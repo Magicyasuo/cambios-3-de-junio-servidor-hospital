@@ -42,7 +42,7 @@ urlpatterns = [
     path('cargar_subseries/', views.cargar_subseries, name='cargar_subseries'),
     path('cargar_series/', views.cargar_series, name='cargar_series'),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('registros/completo/', views.lista_completa_registros, name='lista_completa_registros'),
     path('fuids/', views.lista_fuids, name='lista_fuids'),
     path('documento/<int:registro_id>/', ver_documento, name='ver_documento'),  # <-- Agregar esta línea

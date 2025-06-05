@@ -301,15 +301,25 @@ class FichaPacienteForm(forms.ModelForm):
             'primer_nombre_padre', 'segundo_nombre_padre',          
             'Numero_historia_clinica', 'caja', 'carpeta', 'gabeta',
             'sexo', 'activo', 'estado_de_migracion', 'nacionalidad',
-            'Fecha_de_visita_de_la_tarjeta', 'ultimo_registro_de_visita_en_la_base_de_datos',  'fecha_nacimiento', 'año_de_registro'
+            'Fecha_de_visita_de_la_tarjeta', 'fecha_nacimiento', 'año_de_registro'
         ]
         widgets = {
+
+                'Fecha_de_visita_de_la_tarjeta': forms.DateInput(attrs={
+                'type': 'date',
+                'placeholder': 'Fecha del primer ingreso'
+            }),
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
             'año_de_visita_segun_Fuid': forms.DateInput(attrs={'type': 'date'}),
             'ultimo_registro_de_visita': forms.DateInput(attrs={'type': 'date'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'estado_de_migracion': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-                        'nacionalidad': forms.Select(attrs={'class': 'custom-select'}),
+            'nacionalidad': forms.Select(attrs={'class': 'custom-select'}),
+            'sexo': forms.Select(choices=[
+                ('Masculino', 'Masculino'),
+                ('Femenino', 'Femenino'),
+                ('Otro', 'Otro'),
+            ], attrs={'class': 'custom-select'}),            
 
         }
 

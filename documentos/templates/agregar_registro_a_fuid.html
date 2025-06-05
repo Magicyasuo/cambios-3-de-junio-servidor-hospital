@@ -315,48 +315,53 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 <script>
-    // Script para autocompletar Unidad Documental (si existe en la página)
     const serieSelectUnidad = document.getElementById('{{ form.codigo_serie.id_for_label }}');
     const subserieSelectUnidad = document.getElementById('{{ form.codigo_subserie.id_for_label }}');
     const unidadDocumentalInput = document.getElementById('{{ form.unidad_documental.id_for_label }}');
-    
+
     if (serieSelectUnidad && subserieSelectUnidad && unidadDocumentalInput) {
+        function soloNombre(txt) {
+            return txt.split('-').slice(1).join('-').trim() || txt.trim();
+        }
+
         function actualizarUnidadDocumental() {
-            const serieText = serieSelectUnidad.options[serieSelectUnidad.selectedIndex]?.text.trim() || "";
-            const subserieText = subserieSelectUnidad.options[subserieSelectUnidad.selectedIndex]?.text.trim() || "";
+            const serieNombre = soloNombre(serieSelectUnidad.options[serieSelectUnidad.selectedIndex]?.text || "");
+            const subserieNombre = soloNombre(subserieSelectUnidad.options[subserieSelectUnidad.selectedIndex]?.text || "");
+
             const serieValue = serieSelectUnidad.value;
             const subserieValue = subserieSelectUnidad.value;
-    
-            // Solo actualizamos si hay una serie seleccionada
-            if (serieValue) {
-                 // Construimos la unidad: "Nombre Serie" o "Nombre Serie - Nombre Subserie"
-                 const nuevaUnidad = (subserieValue && subserieText && subserieText !== "Seleccione una subserie" && subserieText !== "No hay subseries para esta serie" && subserieText !== "Error al cargar") 
-                                   ? `${serieText} - ${subserieText}` 
-                                   : serieText; // Si no hay subserie válida, solo usar el nombre de la serie
-        
-                 // Solo autocompletamos si el usuario no ha modificado manualmente
-                 if (!unidadDocumentalInput.value || unidadDocumentalInput.dataset.autofill === "true") {
-                    unidadDocumentalInput.value = nuevaUnidad;
-                    unidadDocumentalInput.dataset.autofill = "true"; // Marcamos que es autocompletado
-                }
+
+            // Verifica que se haya elegido algo más allá de los placeholders
+            const haySerie = serieValue && serieNombre && serieNombre !== "--------";
+            const haySubserie = subserieValue && subserieNombre && subserieNombre !== "Seleccione una subserie" && subserieNombre !== "No hay subseries para esta serie" && subserieNombre !== "Error al cargar";
+
+            let nuevaUnidad = "";
+
+            if (haySerie) {
+                nuevaUnidad = haySubserie ? `${serieNombre} - ${subserieNombre}` : serieNombre;
+            }
+
+            if (!unidadDocumentalInput.value || unidadDocumentalInput.dataset.autofill === "true") {
+                unidadDocumentalInput.value = nuevaUnidad;
+                unidadDocumentalInput.dataset.autofill = "true";
             }
         }
-    
+
         // Event listeners
         serieSelectUnidad.addEventListener('change', actualizarUnidadDocumental);
         subserieSelectUnidad.addEventListener('change', actualizarUnidadDocumental);
-    
+
         // Deshabilitar autocompletado si el usuario escribe
         unidadDocumentalInput.addEventListener('input', function() {
             this.dataset.autofill = "false";
         });
-        
+
         // Ejecutar al inicio por si hay valores precargados
         actualizarUnidadDocumental();
     }
 </script>
+
     
 
 <script>

@@ -81,22 +81,26 @@ canvas {
 <div class="custom-frame">
   <div class="content-header">
       <!-- Barra personalizada -->
-    <nav class="navbar navbar-light bg-light mb-4 animate__animated animate__fadeInDown animate__delay-1s">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <i class="bi bi-archive-fill text-primary me-2" style="font-size:1.5rem;"></i>
-                Hospital del Sarare
-            </a>
-            <span class="navbar-text">
-                {% if request.user.is_authenticated %}
-                    Bienvenido, {{ request.user.username }} | <a href="{% url 'logout' %}">Cerrar sesión</a>
-                {% else %}
-                    <a href="{% url 'login' %}">Iniciar sesión</a>
-                {% endif %}
-            </span>
-        </div>
-    </nav>
+<nav class="navbar navbar-light bg-light mb-4 animate__animated animate__fadeInDown animate__delay-1s">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <i class="bi bi-archive-fill text-primary me-2" style="font-size:1.5rem;"></i>
+      Hospital del Sarare
+    </a>
+    <span class="navbar-text">
+      {% if request.user.is_authenticated %}
+        Bienvenido, {{ request.user.username }} |
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link p-0 align-baseline">Cerrar sesión</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Iniciar sesión</a>
+      {% endif %}
+    </span>
   </div>
+</nav>
+
 
   <div class="content">
       <div class="container-fluid">

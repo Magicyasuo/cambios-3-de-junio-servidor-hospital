@@ -10,6 +10,8 @@ import os
 import logging
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q
+
 
 logger = logging.getLogger(__name__)
 
@@ -304,7 +306,8 @@ class FichaPaciente(models.Model):
             ),
             models.UniqueConstraint(
                 fields=['num_identificacion_secundario', 'tipo_identificacion_secundario'],
-                name='unique_identificacion_tipo_secundario'
+                name='unique_identificacion_tipo_secundario',
+                condition=Q(num_identificacion_secundario__isnull=False) & Q(tipo_identificacion_secundario__isnull=False)
             )
         ]
 

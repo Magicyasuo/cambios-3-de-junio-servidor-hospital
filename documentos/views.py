@@ -1402,7 +1402,7 @@ def export_fuid_to_excel(request, pk):
     ws.title = f"FUID #{fuid.id}"
 
     # Función para truncar valores largos
-    def truncate_value(value, max_length=30):
+    def truncate_value(value, max_length=200):
         if not value:
             return "N/A"
         value = str(value)
@@ -1477,7 +1477,7 @@ def export_fuid_to_excel(request, pk):
         "N° Orden", "Código", "Código Serie", "Código Subserie", "Unidad Documental",
         "Fecha Inicial", "Fecha Final", "Soporte Físico", "Soporte Electrónico",
         "Caja", "Carpeta", "Tomo/Legajo/Libro", "N° Folios", "Tipo", "Cantidad",
-        "Ubicación", "Cantidad Electrónicos", "Tamaño Electrónico", "Notas", "Creado Por", "Fecha Creación"
+        "Ubicación", "Cantidad Electrónicos", "Tamaño Electrónico", "Notas"
     ]
     start_row = current_row + 1
     for col_idx, header in enumerate(headers, start=1):
@@ -1517,8 +1517,8 @@ def export_fuid_to_excel(request, pk):
                 registro.cantidad_documentos_electronicos or "N/A",
                 truncate_value(registro.tamano_documentos_electronicos or "N/A"),
                 truncate_value(registro.notas or "N/A"),
-                registro.creado_por.username if registro.creado_por else "N/A",
-                registro.fecha_creacion.strftime('%Y-%m-%d %H:%M'),
+                # registro.creado_por.username if registro.creado_por else "N/A",
+                # registro.fecha_creacion.strftime('%Y-%m-%d %H:%M'),
             ]
             for col_idx, val in enumerate(row_data, start=1):
                 c = ws.cell(row=current_row, column=col_idx, value=val)

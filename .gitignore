@@ -25,3 +25,6 @@ staticfiles/
 # Otros: carpetas de desarrollo
 .vscode/
 .idea/
+
+# Ignorar carpeta de imágenes específicas
+documentos/templates/img/
