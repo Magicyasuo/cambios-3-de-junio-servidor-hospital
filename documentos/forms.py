@@ -290,6 +290,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import FichaPaciente
 
+from django.core.exceptions import ValidationError
+
 class FichaPacienteForm(forms.ModelForm):
     class Meta:
         model = FichaPaciente
@@ -304,11 +306,7 @@ class FichaPacienteForm(forms.ModelForm):
             'Fecha_de_visita_de_la_tarjeta', 'fecha_nacimiento', 'año_de_registro'
         ]
         widgets = {
-
-                'Fecha_de_visita_de_la_tarjeta': forms.DateInput(attrs={
-                'type': 'date',
-                'placeholder': 'Fecha del primer ingreso'
-            }),
+            'Fecha_de_visita_de_la_tarjeta': forms.DateInput(attrs={'type': 'date', 'placeholder': 'Fecha del primer ingreso'}),
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
             'año_de_visita_segun_Fuid': forms.DateInput(attrs={'type': 'date'}),
             'ultimo_registro_de_visita': forms.DateInput(attrs={'type': 'date'}),
@@ -319,16 +317,33 @@ class FichaPacienteForm(forms.ModelForm):
                 ('Masculino', 'Masculino'),
                 ('Femenino', 'Femenino'),
                 ('Otro', 'Otro'),
-            ], attrs={'class': 'custom-select'}),            
-
+            ], attrs={'class': 'custom-select'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            # Solo agregar form-control a campos que no sean booleanos
             if not isinstance(field.widget, forms.CheckboxInput):
                 css = 'form-control'
                 if self.errors.get(field_name):
                     css += ' is-invalid'
                 field.widget.attrs.update({'class': css})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        num_identificacion_secundario = cleaned_data.get('num_identificacion_secundario')
+        tipo_identificacion_secundario = cleaned_data.get('tipo_identificacion_secundario')
+
+        # Validación manual solo si ambos campos están llenos
+        if num_identificacion_secundario and tipo_identificacion_secundario:
+            existe = FichaPaciente.objects.filter(
+                num_identificacion_secundario=num_identificacion_secundario,
+                tipo_identificacion_secundario=tipo_identificacion_secundario
+            )
+            # Excluir el propio registro si se está editando (importante para updates)
+            if self.instance.pk:
+                existe = existe.exclude(pk=self.instance.pk)
+            if existe.exists():
+                raise ValidationError("Ya existe un registro con esta identificación secundaria.")
+
+        return cleaned_data

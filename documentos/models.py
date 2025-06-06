@@ -298,18 +298,14 @@ class FichaPaciente(models.Model):
             default=nacionalidad_colombiana_default,
             null=True, blank=True, db_index=True)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['num_identificacion', 'tipo_identificacion'],
-                name='unique_identificacion_tipo'
-            ),
-            models.UniqueConstraint(
-                fields=['num_identificacion_secundario', 'tipo_identificacion_secundario'],
-                name='unique_identificacion_tipo_secundario',
-                condition=Q(num_identificacion_secundario__isnull=False) & Q(tipo_identificacion_secundario__isnull=False)
-            )
-        ]
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=['num_identificacion', 'tipo_identificacion'],
+            name='unique_identificacion_tipo'
+        ),
+    ]
+
 
     def __str__(self):
         return f"Ficha del paciente {self.primer_nombre} {self.primer_apellido} - {self.num_identificacion or self.num_identificacion_secundario}"
