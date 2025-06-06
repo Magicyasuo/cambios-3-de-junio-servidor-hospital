@@ -1750,12 +1750,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UbicacionFisicaForm
 
+from django.http import Http404
+
 @login_required
 def preparar_fichas1(request):
     """
     Paso 0 – El funcionario selecciona gaveta/caja/carpeta.
     Guarda la elección en la sesión y redirige al buscador o al formulario de creación.
     """
+    if not request.user.has_perm('documentos.add_fichapaciente'):
+        raise Http404("No tienes permiso para crear fichas.")
+
     if request.method == "POST":
         form = UbicacionFisicaForm(request.POST)
         if form.is_valid():
@@ -1769,14 +1774,16 @@ def preparar_fichas1(request):
 
     return render(request, "templatesfichas.html/preparar.html", {"form": form})
 
-
-# paso 1
+@login_required
 def buscar_ficha1(request):
     """
-    Paso1 Busca una ficha por número de identificación o historia clínica.
+    Paso 1 – Busca una ficha por número de identificación o historia clínica.
     Si existe → redirige a edición; si no existe → redirige a creación
     con los campos de búsqueda en la URL para pre‑rellenar.
     """
+    if not request.user.has_perm('documentos.add_fichapaciente'):
+        raise Http404("No tienes permiso para crear fichas.")
+
     if "prefill" not in request.session:
         return redirect("preparar_fichas")
 
@@ -1806,7 +1813,6 @@ def buscar_ficha1(request):
         form = BuscaFichaForm()
 
     return render(request, "templatesfichas.html/buscar.html", {"form": form})
-# lista fichas
 
 PAGE_SIZE = 50       
                       # 50 consultas y 50 renderizadas
@@ -1955,10 +1961,13 @@ def editar_ficha1(request, consecutivo):
         {"form": form, "modo": "editar", "ficha": ficha},
     )
 
+from django.http import Http404
 
-#renderizadores de las vistas
 @login_required
 def detalle_ficha1(request, consecutivo):
+    if not request.user.has_perm('documentos.view_fichapaciente'):
+        raise Http404("No tienes permiso para ver esta ficha.")
+    
     ficha = get_object_or_404(FichaPaciente, consecutivo=consecutivo)
     return render(request, "templatesfichas.html/ficha_paciente_detail.html", {"ficha": ficha})
 
@@ -1968,10 +1977,9 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def bienvenida_fichas(request):
-    """
-    Página de bienvenida para la gestión de fichas.
-    Muestra opciones para iniciar diferentes flujos.
-    """
+    if not request.user.has_perm('documentos.view_fichapaciente'):
+        raise Http404("No tienes permiso para ver las fichas.")
+    
     return render(request, "templatesfichas.html/bienvenida.html")
 
 

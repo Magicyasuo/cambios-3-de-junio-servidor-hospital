@@ -305,6 +305,12 @@ class Meta:
             name='unique_identificacion_tipo'
         ),
     ]
+    permissions = [
+            ("view_fichapaciente", "Puede ver la ficha del paciente"),
+            ("change_fichapaciente", "Puede editar la ficha del paciente"),
+            ("delete_fichapaciente", "Puede eliminar la ficha del paciente"),
+            ("add_fichapaciente", "Puede agregar la ficha del paciente"),
+        ]
 
 
     def __str__(self):
