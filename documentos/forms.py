@@ -333,17 +333,30 @@ class FichaPacienteForm(forms.ModelForm):
         cleaned_data = super().clean()
         num_identificacion_secundario = cleaned_data.get('num_identificacion_secundario')
         tipo_identificacion_secundario = cleaned_data.get('tipo_identificacion_secundario')
+        num_identificacion = cleaned_data.get('num_identificacion')
+        tipo_identificacion = cleaned_data.get('tipo_identificacion')
 
-        # Validación manual solo si ambos campos están llenos
+        # Validación secundaria
         if num_identificacion_secundario and tipo_identificacion_secundario:
             existe = FichaPaciente.objects.filter(
                 num_identificacion_secundario=num_identificacion_secundario,
                 tipo_identificacion_secundario=tipo_identificacion_secundario
             )
-            # Excluir el propio registro si se está editando (importante para updates)
             if self.instance.pk:
                 existe = existe.exclude(pk=self.instance.pk)
             if existe.exists():
                 raise ValidationError("Ya existe un registro con esta identificación secundaria.")
 
+        # Validación primaria
+        if num_identificacion and tipo_identificacion:
+            existe = FichaPaciente.objects.filter(
+                num_identificacion=num_identificacion,
+                tipo_identificacion=tipo_identificacion
+            )
+            if self.instance.pk:
+                existe = existe.exclude(pk=self.instance.pk)
+            if existe.exists():
+                raise ValidationError("Ya existe un registro con esta identificación principal.")
+
         return cleaned_data
+
