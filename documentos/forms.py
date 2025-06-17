@@ -303,7 +303,8 @@ class FichaPacienteForm(forms.ModelForm):
             'primer_nombre_padre', 'segundo_nombre_padre',          
             'Numero_historia_clinica', 'caja', 'carpeta', 'gabeta',
             'sexo', 'activo', 'estado_de_migracion', 'nacionalidad',
-            'Fecha_de_visita_de_la_tarjeta', 'fecha_nacimiento', 'año_de_registro'
+            'Fecha_de_visita_de_la_tarjeta', 'fecha_nacimiento', 
+            # 'año_de_registro'
         ]
         widgets = {
             'Fecha_de_visita_de_la_tarjeta': forms.DateInput(attrs={'type': 'date', 'placeholder': 'Fecha del primer ingreso'}),

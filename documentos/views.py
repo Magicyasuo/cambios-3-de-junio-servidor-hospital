@@ -641,7 +641,6 @@ class FUIDCreateView(LoginRequiredMixin, CreateView):
 
 
 
-
 class FUIDUpdateView(LoginRequiredMixin, UpdateView):
     model = FUID
     form_class = FUIDForm
@@ -650,47 +649,41 @@ class FUIDUpdateView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         fuid = self.get_object()
-
-        # Verificar si el usuario es el creador o es superusuario
-        if not request.user.is_superuser and fuid.creado_por != request.user:
+        # Solo el creador o superusuario pueden editar
+        if not (request.user.is_superuser or fuid.creado_por == request.user):
             return HttpResponseForbidden("Solo el creador de este FUID puede editarlo.")
-
         return super().dispatch(request, *args, **kwargs)
-
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
         fuid = self.get_object()
 
-        oficina_user = self.request.user.perfil.oficina
-        usuarios_de_mi_oficina = User.objects.filter(perfil__oficina=oficina_user)
+        # 1) Usuarios de mi oficina
+        oficina = self.request.user.perfil.oficina
+        usuarios_misma_oficina = User.objects.filter(perfil__oficina=oficina)
 
-        # Filtra registros solo de la oficina del usuario
-        registros_disponibles = RegistroDeArchivo.objects.filter(creado_por__in=usuarios_de_mi_oficina)
+        # 2) Registros creados por esos usuarios, limitados a 1.000 más recientes
+        registros_disponibles = (
+            RegistroDeArchivo.objects
+            .filter(creado_por__in=usuarios_misma_oficina)
+            .order_by('-id')  # o '-fecha_creacion' si existe
+        )[:100]  # límite máximo
 
-        # Obtener los registros ya asociados a este FUID
-        registros_asociados = fuid.registros.all()
+        # 3) Asignar el queryset al campo 'registros'
+        form.fields['registros'].queryset = registros_disponibles
 
-        # Fusionar registros asociados con los disponibles para evitar que desaparezcan
-        form.fields['registros'].queryset = (registros_disponibles | registros_asociados).distinct()
+        # 4) Preseleccionar los que ya estaban asociados al FUID
+        form.initial['registros'] = list(
+            fuid.registros.values_list('id', flat=True)
+        )
 
         return form
 
     def form_valid(self, form):
-        # Lógica de guardado
         fuid = form.save()
-        registros = form.cleaned_data.get("registros")
-        fuid.registros.set(registros)
+        # Sincronizar la relación M2M con lo seleccionado
+        fuid.registros.set(form.cleaned_data['registros'])
         return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fuid = self.get_object()
-
-        # Obtener los registros ya asociados al FUID
-        context["registros_asociados"] = list(fuid.registros.values_list("id", flat=True))
-
-        return context
 
 @login_required
 def lista_fuids(request):
@@ -1157,45 +1150,37 @@ def agregar_registro_a_fuid(request, fuid_id):
 
 @login_required
 def editar_registro_de_fuid(request, fuid_id, registro_id):
-    # Verificar permiso de edición
-    if not request.user.has_perm('documentos.change_registrodearchivo'):
+    # Verificar permiso de edición (superusuario siempre tiene acceso)
+    if not (request.user.is_superuser or request.user.has_perm('documentos.change_registrodearchivo')):
         return HttpResponseForbidden("No tienes permiso para editar registros.")
 
-    fuid = get_object_or_404(FUID, pk=fuid_id)
+    # Obtener FUID y Registro
+    fuid     = get_object_or_404(FUID, pk=fuid_id)
     registro = get_object_or_404(RegistroDeArchivo, pk=registro_id)
 
-    # Asegurarnos de que el registro pertenece realmente al FUID
-    if registro not in fuid.registros.all():
+    # Comprobación eficiente de asociación en ManyToMany (sin cargar todo el conjunto)
+    if not fuid.registros.filter(pk=registro.id).exists():
         return HttpResponseForbidden("El registro no está asociado a este FUID.")
 
     if request.method == 'POST':
-        # 🔴 Incluimos request.FILES para manejar archivos
         form = RegistroDeArchivoForm(request.POST, request.FILES, instance=registro)
         if form.is_valid():
             updated_registro = form.save()
-
-            # Verificamos si subieron un archivo nuevo
-            archivo_subido = form.cleaned_data.get('archivo')   
+            archivo_subido = form.cleaned_data.get('archivo')
             if archivo_subido:
-                # Creamos el Documento y lo asociamos
                 Documento.objects.create(
                     registro=updated_registro,
                     archivo=archivo_subido
                 )
-
             messages.success(request, 'Registro actualizado correctamente.')
             return redirect('detalle_fuid', pk=fuid_id)
         else:
-            # Manejar errores de validación
             for field, errors in form.errors.items():
-                field_name = form.fields[field].label
+                label = form.fields[field].label
                 for error in errors:
-                    messages.error(request, f"{field_name}: {error}")
+                    messages.error(request, f"{label}: {error}")
     else:
-        # Cargar la instancia existente para prellenar campos
         form = RegistroDeArchivoForm(instance=registro)
-
-        # Ajustar la queryset de subseries si la serie ya está presente
         if registro.codigo_serie:
             form.fields['codigo_subserie'].queryset = SubserieDocumental.objects.filter(
                 serie_id=registro.codigo_serie.id
@@ -1204,11 +1189,10 @@ def editar_registro_de_fuid(request, fuid_id, registro_id):
             form.fields['codigo_subserie'].queryset = SubserieDocumental.objects.none()
 
     return render(request, 'editar_registro_de_fuid.html', {
-        'form': form,
-        'fuid': fuid,
-        'registro': registro
+        'form':     form,
+        'fuid':     fuid,
+        'registro': registro,
     })
-
 
 @login_required
 def welcome_view(request):

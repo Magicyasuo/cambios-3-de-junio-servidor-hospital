@@ -206,6 +206,22 @@
             {{ form.Estado_archivo }}
             <label class="form-check-label" for="{{ form.Estado_archivo.id_for_label }}">Registro vigente</label>
         </div>
+            <div class="mb-3">
+                <label for="{{ form.identificador_documento.id_for_label }}" class="form-label">
+                    Identificador documental
+                </label>
+                {{ form.identificador_documento|add_class:"form-control" }}
+                <div class="form-text text-muted">
+                    Solo diligencie este campo si se trata de una Historia Clínica u otro documento que lo requiera.
+                </div>
+            </div>
+
+            <!-- Campo Notas -->
+            <div class="mb-3">
+                <label for="{{ form.notas.id_for_label }}" class="form-label">Notas</label>
+                {{ form.notas|add_class:"form-control" }}
+            </div>
+
 
 
         <!-- Mostrar Documentos adjuntos (si existen) -->
