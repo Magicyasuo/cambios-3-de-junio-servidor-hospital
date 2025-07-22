@@ -67,6 +67,7 @@ th, td { word-wrap: break-word; white-space: normal; }
           <th>Unidad Administrativa</th>
           <th>Oficina Productora</th>
           <th>Objeto</th>
+          <th>Notas</th>                    <!-- Nueva columna -->
           <th>Fecha de Creación</th>
           <th>Creado por</th>
           <th>Acciones</th>
@@ -79,6 +80,8 @@ th, td { word-wrap: break-word; white-space: normal; }
           <td>{{ fuid.unidad_administrativa }}</td>
           <td>{{ fuid.oficina_productora }}</td>
           <td>{{ fuid.objeto }}</td>
+          <td>{{ fuid.notas|default:"—" }}</td>   <!-- Aquí muestras notas, con guión si está vacío -->
+
           <td>{{ fuid.fecha_creacion|date:"Y-m-d" }}</td>
           <td>{{ fuid.creado_por }}</td>
           <td>

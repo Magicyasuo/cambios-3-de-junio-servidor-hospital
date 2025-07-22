@@ -22,7 +22,10 @@ from django.shortcuts import render, redirect, get_object_or_404  # Métodos par
 from django.urls import reverse_lazy
 from django.utils.timezone import now, timedelta  # Fechas y tiempos con soporte de zona horaria
 from django.views.generic.edit import CreateView, UpdateView  # Vistas genéricas para creación y edición de objetos
+from django.http import HttpResponseRedirect
+
 # Librerías de terceros
+
 import openpyxl  # Librería para trabajar con archivos Excel
 from openpyxl.utils import get_column_letter  # Utilidad para obtener letras de columnas en Excel
 from openpyxl.styles import Alignment, Border, Side, PatternFill, Font  # Estilos y formato para celdas en Excel
@@ -584,106 +587,49 @@ def crear_registro_fuid_ajax(request, fuid_id):
 
 from django.http import HttpResponseForbidden
 from guardian.shortcuts import assign_perm
-
 class FUIDCreateView(LoginRequiredMixin, CreateView):
     model = FUID
-    form_class = FUIDForm
+    form_class = FUIDForm  # sin registros
     template_name = "fuid_form.html"
     success_url = reverse_lazy("lista_fuids")
 
     def dispatch(self, request, *args, **kwargs):
-        # Verifica si el usuario tiene permiso global para crear FUIDs
         if not request.user.has_perm('documentos.add_fuid'):
             return HttpResponseForbidden("No tienes permiso para crear FUIDs.")
         return super().dispatch(request, *args, **kwargs)
 
-    def get_form(self, *args, **kwargs):
-        form = super().get_form(*args, **kwargs)
-
-        # Solo registros creados por el usuario autenticado
-        registros = RegistroDeArchivo.objects.filter(
-            fuids__isnull=True,
-            creado_por=self.request.user
-        )
-
-        # Aplicar filtros opcionales
-        fecha_inicio = self.request.GET.get("fecha_inicio")
-        fecha_fin = self.request.GET.get("fecha_fin")
-        if fecha_inicio:
-            registros = registros.filter(fecha_creacion__gte=fecha_inicio)
-        if fecha_fin:
-            registros = registros.filter(fecha_creacion__lte=fecha_fin)
-
-        # Asignar el queryset de registros al formulario
-        form.fields['registros'].queryset = registros
-
-        # Establecer el usuario autenticado en el formulario y ocultarlo en la plantilla
-        form.fields['usuario'].initial = self.request.user.id
-        form.fields['usuario'].widget.attrs['readonly'] = True  # O simplemente excluirlo de la plantilla
-        return form
-
     def form_valid(self, form):
-        # Asigna automáticamente el usuario que crea el FUID
         form.instance.creado_por = self.request.user
         fuid = form.save()
-
-        # Asigna permisos a nivel de objeto al creador usando django-guardian
-        assign_perm('documentos.view_own_fuid', self.request.user, fuid)
-        assign_perm('documentos.edit_own_fuid', self.request.user, fuid)
-        assign_perm('documentos.delete_own_fuid', self.request.user, fuid)
-
-        # Asociar registros al FUID
-        registros = form.cleaned_data["registros"]
-        fuid.registros.set(registros)
-
+        # permisos con django-guardian...
+        for perm in ('view_own_fuid','edit_own_fuid','delete_own_fuid'):
+            assign_perm(f'documentos.{perm}', self.request.user, fuid)
         return super().form_valid(form)
-    
-
 
 
 class FUIDUpdateView(LoginRequiredMixin, UpdateView):
     model = FUID
-    form_class = FUIDForm
+    form_class = FUIDForm  # sigue incluyendo registros en el Form, pero lo quitamos abajo
     template_name = "fuid_form.html"
     success_url = reverse_lazy("lista_fuids")
 
     def dispatch(self, request, *args, **kwargs):
         fuid = self.get_object()
-        # Solo el creador o superusuario pueden editar
         if not (request.user.is_superuser or fuid.creado_por == request.user):
             return HttpResponseForbidden("Solo el creador de este FUID puede editarlo.")
         return super().dispatch(request, *args, **kwargs)
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
-        fuid = self.get_object()
-
-        # 1) Usuarios de mi oficina
-        oficina = self.request.user.perfil.oficina
-        usuarios_misma_oficina = User.objects.filter(perfil__oficina=oficina)
-
-        # 2) Registros creados por esos usuarios, limitados a 1.000 más recientes
-        registros_disponibles = (
-            RegistroDeArchivo.objects
-            .filter(creado_por__in=usuarios_misma_oficina)
-            .order_by('-id')  # o '-fecha_creacion' si existe
-        )[:100]  # límite máximo
-
-        # 3) Asignar el queryset al campo 'registros'
-        form.fields['registros'].queryset = registros_disponibles
-
-        # 4) Preseleccionar los que ya estaban asociados al FUID
-        form.initial['registros'] = list(
-            fuid.registros.values_list('id', flat=True)
-        )
-
+        # elimina cualquier referencia a registros
+        form.fields.pop('registros', None)
         return form
 
     def form_valid(self, form):
-        fuid = form.save()
-        # Sincronizar la relación M2M con lo seleccionado
-        fuid.registros.set(form.cleaned_data['registros'])
-        return super().form_valid(form)
+        # guardamos SOLO los campos del formulario, sin tocar la M2M
+        fuid = form.save(commit=False)
+        fuid.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 @login_required
 def lista_fuids(request):

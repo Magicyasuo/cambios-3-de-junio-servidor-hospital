@@ -112,7 +112,8 @@ class FUID(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='fuids')
     registros = models.ManyToManyField('RegistroDeArchivo', related_name='fuids', blank=True)
-    
+    notas = models.CharField(max_length=255, null=True, blank=True) #actualizacion del 22 de julio
+
     elaborado_por_nombre = models.CharField(max_length=255, null=True, blank=True)
     elaborado_por_cargo = models.CharField(max_length=255, null=True, blank=True)
     elaborado_por_lugar = models.CharField(max_length=255, null=True, blank=True)

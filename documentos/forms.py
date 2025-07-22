@@ -144,12 +144,12 @@ class FUIDForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
 
-    registros = forms.ModelMultipleChoiceField(
-        queryset=RegistroDeArchivo.objects.none(),  
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Registros Asociados"
-    )
+    # registros = forms.ModelMultipleChoiceField(
+    #     queryset=RegistroDeArchivo.objects.none(),  
+    #     widget=forms.CheckboxSelectMultiple,
+    #     required=False,
+    #     label="Registros Asociados"
+    # )
 
     elaborado_por_nombre = forms.CharField(
         required=False,
@@ -226,7 +226,7 @@ class FUIDForm(forms.ModelForm):
     class Meta:
         model = FUID
         fields = [
-            'entidad_productora', 'unidad_administrativa', 'oficina_productora', 'objeto',
+            'entidad_productora', 'unidad_administrativa', 'oficina_productora', 'objeto', 'notas',
             'registros',
             'elaborado_por_nombre', 'elaborado_por_cargo', 'elaborado_por_lugar', 'elaborado_por_fecha',
             'entregado_por_nombre', 'entregado_por_cargo', 'entregado_por_lugar', 'entregado_por_fecha',
@@ -244,13 +244,13 @@ class FUIDForm(forms.ModelForm):
         # No es necesario asignar self.instance aquí, ModelForm ya lo hace
         super().__init__(*args, **kwargs)
 
-        # Configura el queryset de registros
-        if self.instance and self.instance.pk:
-            registros_actuales = self.instance.registros.all()
-            registros_disponibles = RegistroDeArchivo.objects.filter(fuids__isnull=True)
-            self.fields['registros'].queryset = registros_actuales | registros_disponibles
-        else:
-            self.fields['registros'].queryset = RegistroDeArchivo.objects.filter(fuids__isnull=True)
+        # # Configura el queryset de registros
+        # if self.instance and self.instance.pk:
+        #     registros_actuales = self.instance.registros.all()
+        #     registros_disponibles = RegistroDeArchivo.objects.filter(fuids__isnull=True)
+        #     self.fields['registros'].queryset = registros_actuales | registros_disponibles
+        # else:
+        #     self.fields['registros'].queryset = RegistroDeArchivo.objects.filter(fuids__isnull=True)
   
 from django import forms
 from .models import FichaPaciente
